@@ -21,7 +21,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: petclinic
-        image: 450444046629.dkr.ecr.eu-west-1.amazonaws.com/user26-petclinic:v10
+        image: 450444046629.dkr.ecr.eu-west-1.amazonaws.com/user26-petclinic:v12
         ports:
         - containerPort: 8080
         securityContext:
