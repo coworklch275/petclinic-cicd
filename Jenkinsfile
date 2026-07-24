@@ -15,7 +15,8 @@ pipeline {
         IMAGE_TAG = "v${BUILD_NUMBER}"
 
         K8S_MANIFEST_REPO = "https://github.com/coworklch275/petclinic-cicd.git"
-        DEPLOYMENT_FILE = "k8s/deployment.yaml"
+        DEPLOYMENT_FILE = "k8s/02_deployment.yaml"
+        DEPLOY_BRANCH = "deploy"
 
         SONAR_PROJECT_KEY = "user26-petclinic"
         TRIVY_CACHE = "/var/jenkins_home/.cache/trivy"
@@ -29,10 +30,10 @@ pipeline {
                     url: 'https://github.com/coworklch275/petclinic-cicd.git'
             }
         }
-
         stage('Maven Build') {
             steps {
                 sh '''
+                    rm -rf ${WORKSPACE}/.trivycache
                     chmod +x mvnw || true
 
                     if [ -f "./mvnw" ]; then
@@ -149,6 +150,9 @@ pipeline {
             }
         }
 
+        // ArgoCD가 감지할 수 있도록, 클러스터에 직접 apply하지 않고
+        // git manifest의 image tag만 갱신해서 deploy 브랜치로 push한다.
+        // main이 아닌 deploy로 push하므로 Jenkins(=main만 감시)가 재트리거되지 않는다.
         stage('Update GitOps Manifest') {
             steps {
                 withCredentials([usernamePassword(
@@ -164,9 +168,9 @@ pipeline {
 
                         git add ${DEPLOYMENT_FILE}
                         git diff --cached --quiet && echo "No manifest changes" || \
-                          git commit -m "ci: deploy ${IMAGE_TAG} [skip ci]"
+                          git commit -m "ci: deploy ${IMAGE_TAG}"
 
-                        git push https://${GIT_USER}:${GIT_TOKEN}@github.com/coworklch275/petclinic-cicd.git HEAD:main
+                        git push https://${GIT_USER}:${GIT_TOKEN}@github.com/coworklch275/petclinic-cicd.git HEAD:${DEPLOY_BRANCH} --force
                     '''
                 }
             }
