@@ -19,7 +19,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: petclinic-service
+                name: petclinic-svc
                 port:
                   number: 80
 
