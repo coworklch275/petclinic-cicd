@@ -15,7 +15,7 @@ pipeline {
         IMAGE_TAG = "v${BUILD_NUMBER}"
 
         K8S_MANIFEST_REPO = "https://github.com/coworklch275/petclinic-cicd.git"
-        DEPLOYMENT_FILE = "k8s/02_deployment.yaml"
+        DEPLOYMENT_FILE = "k8s/deployment.yaml"
         DEPLOY_BRANCH = "deploy"
 
         SONAR_PROJECT_KEY = "user26-petclinic"
